@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="002" author="michael">
+        <sql>
+            INSERT INTO users (name, email, age)
+            SELECT
+                md5(random()::text) AS name,
+                concat(md5(random()::text), '@example.com') AS email,
+                (random() * 50 + 20)::int AS age
+            FROM generate_series(1, 1000);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
