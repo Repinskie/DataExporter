@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    username: data_exporter
+    password: data_exporter_2024
+    url: jdbc:postgresql://localhost:5437/data_exporter_db
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    change-log: db/changelog/changelog-master.xml
+
+server:
+  port: 8506

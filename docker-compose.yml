@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  postgresql:
+    image: postgres:17.2-alpine3.21
+    container_name: data-exporter-postgres
+    ports:
+      - '5437:5432'
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: data_exporter
+      POSTGRES_PASSWORD: data_exporter_2024
+      POSTGRES_DB: data_exporter_db
+    volumes:
+      - data_exporter_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U data_exporter -d data_exporter_db"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    networks:
+      - dataExporter
+
+  backend:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: data-exporter-backend
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    ports:
+      - '8506:8506'
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/data_exporter_db
+      SPRING_DATASOURCE_USERNAME: data_exporter
+      SPRING_DATASOURCE_PASSWORD: data_exporter_2024
+    networks:
+      - dataExporter
+
+volumes:
+  data_exporter_db: {}
+
+networks:
+  dataExporter:
+    driver: bridge
